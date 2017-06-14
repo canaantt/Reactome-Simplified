@@ -2,10 +2,18 @@
 # To Set up 
 
 ### Step I: unzip data folder
-### Step II: mongoDB 
-- create database "reactome-simple"
-- create Collections: "PathwayHierarchy", "PhysicalEntity", "ReactionLikeEvent_To_PhysicalEntity", "Pathways","ReactionLikeEvent", "Pathway_To_ReactionLikeEvent" 
-### Step III: install node packages
+ 
+### Step II: install node packages
+
     `npm install`
-### Step IV: run code to popular mongoDB 
+    
+### Step III: run code to popular mongoDB 
+
     `$ node process.js`
+    
+### Step IV: mongoDB 
+
+- create database "reactome-simple"
+- create Collections: "PathwayHierarchy", "PhysicalEntity", "ReactionLikeEvent_To_PhysicalEntity", "Pathways","ReactionLikeEvent", "Pathway_To_ReactionLikeEvent"
+
+![Reactome Simplified Database ER](ER.png)
