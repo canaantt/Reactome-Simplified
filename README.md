@@ -6,4 +6,5 @@
 - create database "reactome-simple"
 - create Collections: "PathwayHierarchy", "PhysicalEntity", "ReactionLikeEvent_To_PhysicalEntity", "Pathways","ReactionLikeEvent", "Pathway_To_ReactionLikeEvent" 
 ### Step III: npm install
-### `$ node process.js`
+### Step IV: run code 
+    `$ node process.js`
