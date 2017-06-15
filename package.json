@@ -7,7 +7,8 @@
     "fs": "^0.0.1-security",
     "mongoose": "^4.10.6",
     "node-async-loop": "^1.2.2",
-    "node-fs": "^0.1.7"
+    "node-fs": "^0.1.7",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {},
   "scripts": {
