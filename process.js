@@ -1,7 +1,7 @@
 // Remove the first 9 lines from the original txt files, the output from MySQL json objects
 // $sed 1,9d PhysicalEntity.json.txt > PhysicalEntity.json
 // $sed 1,9d ReactionLikeEvent_To_PhysicalEntity.json.txt > ReactionLikeEvent_To_PhysicalEntity.json
-
+const _ = require("underscore");
 var PhysicalEntity = require("./data/PhysicalEntity.json");
 var PhysicalEntityHierarchy = require("./data/PhysicalEntityHierarchy.json");
 var ReactionLikeEvent_To_PhysicalEntity = require("./data/ReactionLikeEvent_To_PhysicalEntity.json");
@@ -61,7 +61,7 @@ var humanPhysicalEntities_annots = _.uniq(humanPhysicalEntities.map(function(m){
 //   'Golgi lumen',
 //   'Golgi membrane',
 //   'Golgi-associated vesicle lumen',...,'pre-autophagosomal structure membrane','proteinaceous extracellular matrix',...];
-var humanPhysicalEntities = _.uniq(humanPhysicalEntities.map(function(m){ return m.split(" [")[0];})); // 32830 potential GENES(?)
+var humanPhysicalEntities = _.uniq(humanPhysicalEntities.map(function(m){ return m.split(" ")[0];})); // 32830 potential GENES(?)
 
 // Human, EGFR clean entry yield one record from PhysicalEntity Collection
 PhysicalEntity.filter(function(m){return m.species === "Homo sapiens" && m.displayName.split(" [")[0] === "EGFR";})
@@ -120,13 +120,24 @@ Pathways.filter(function(m){return m.id === '177929';})
 
 
 var gene_to_pathways = function(gene){
-   var geneIDs = PhysicalEntity.filter(function(m){return m.species === "Homo sapiens" && m.displayName.split(" [")[0] === gene;})
-                               .map(function(m){return m.id});
+   var obj = {};
+   var geneIDs = PhysicalEntity.filter(function(m){
+        return m.species === "Homo sapiens" && m.displayName.split(" ")[0] === gene;
+    }).map(function(m){return m.id});
    console.log("geneIDs: ", geneIDs);
    if(geneIDs.length === 0) {
        console.log("This gene is not found.");
        return;
-   }                         
+   } 
+   obj.child = geneIDs.map(function(id){
+                    console.log(id);
+                    var o = {};
+                    o[id] = PhysicalEntityHierarchy.filter(function(m){
+                              return m.physicalEntityId === id;
+                            }).map(function(m){ return m.childPhysicalEntityId; });
+                    return o;
+                });
+
    var reactionEventIDs = geneIDs.map(function(id){
                             return ReactionLikeEvent_To_PhysicalEntity.filter(function(m){return m.physicalEntityId === id;})
                                                             .map(function(m){return m.reactionLikeEventId});
@@ -148,7 +159,7 @@ var gene_to_pathways = function(gene){
        console.log("No pathway is found.");
        return;
    }            
-   var obj = {};
+   
    obj.pathways = pathwayIDs.map(function(id){
        return Pathways.filter(function(m){ return m.id === id});
    });
