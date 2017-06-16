@@ -22,26 +22,26 @@ var data = {
 const asyncLoop = require('node-async-loop');
 const mongoose = require('mongoose');
 
-mongoose.connect("mongodb://localhost:27017/reactome-simple");
-var db = mongoose.connection;
-db.once("open", function(callback){
-    console.log("Connection succeeded.");
-    asyncLoop(Object.keys(data), function(c, next){
-        console.log('Current Collection: ' + c);
-        db.collection(c).insertMany(data[c], function(err, result){
-            if (err) console.log(err);
-            next();
-        })
-    }, function(err){
-        if (err){
-            console.log('Error: ' + err.message);
-            return;
-        } else {
-            console.log("Finished!");
-            db.close();
-        }
-    });
-});
+// mongoose.connect("mongodb://localhost:27017/reactome-simple");
+// var db = mongoose.connection;
+// db.once("open", function(callback){
+//     console.log("Connection succeeded.");
+//     asyncLoop(Object.keys(data), function(c, next){
+//         console.log('Current Collection: ' + c);
+//         db.collection(c).insertMany(data[c], function(err, result){
+//             if (err) console.log(err);
+//             next();
+//         })
+//     }, function(err){
+//         if (err){
+//             console.log('Error: ' + err.message);
+//             return;
+//         } else {
+//             console.log("Finished!");
+//             db.close();
+//         }
+//     });
+// });
 
 // Queries
 // EGFR
@@ -118,7 +118,28 @@ Pathways.filter(function(m){return m.id === '177929';})
  PathwayHierarchy.filter(function(m){return m.childPathwayId === '177929';})
 [ { pathwayId: '162582', childPathwayId: '177929' } ]
 
+var findPhysicalEntity = function(id){
+    return PhysicalEntity.filter(function(m){return m.id === id})[0].displayName;
+}
 
+
+var reaction_to_physicalEntity = function(reactionID){
+    var arr = ReactionLikeEvent_To_PhysicalEntity.filter(function(m){
+                    //console.log(m);
+                    return m.reactionLikeEventId === reactionID;
+                });
+        if(arr.length !==0 ){
+            return arr.map(function(n){
+                    //console.log(n);
+                    if('physicalEntityId' in n)
+                    return findPhysicalEntity(n.physicalEntityId);
+                    return null;
+                });
+        } else {
+            return;
+        }
+        
+    };
 var gene_to_pathways = function(gene){
    var obj = {};
    var geneIDs = PhysicalEntity.filter(function(m){
@@ -129,15 +150,14 @@ var gene_to_pathways = function(gene){
        console.log("This gene is not found.");
        return;
    } 
-   obj.child = geneIDs.map(function(id){
-                    console.log(id);
-                    var o = {};
-                    o[id] = PhysicalEntityHierarchy.filter(function(m){
+   var child = {};
+   geneIDs.forEach(function(id){
+                    console.log(id);  
+                    child[findPhysicalEntity(id)] = PhysicalEntityHierarchy.filter(function(m){
                               return m.physicalEntityId === id;
-                            }).map(function(m){ return m.childPhysicalEntityId; });
-                    return o;
+                            }).map(function(m){ return findPhysicalEntity(m.childPhysicalEntityId); });
                 });
-
+   obj.child = child;
    var reactionEventIDs = geneIDs.map(function(id){
                             return ReactionLikeEvent_To_PhysicalEntity.filter(function(m){return m.physicalEntityId === id;})
                                                             .map(function(m){return m.reactionLikeEventId});
@@ -180,3 +200,34 @@ var gene_to_pathways = function(gene){
    return obj;
                       
 };
+
+
+// Test the stableID from two tables overlapping, the physicalEntity_STIDs is very long 520840
+// var physicalEntity_STIDs = PhysicalEntity.map(function(m){return m.stableId;});
+// var pathway_STIDs = Pathways.map(function(m){return m.stableId;});
+var HumanPathways = Pathways.filter(function(m){
+    return m.species === 'Homo sapiens';
+});
+
+var HumanPathways_ReactionEventIDs = HumanPathways.map(function(pathway){
+                                        var o = {};
+                                        o = pathway;
+                                        o.reactionEventIDs = Pathway_To_ReactionLikeEvent.filter(function(m){
+                                            return m.pathwayId === pathway.id;
+                                        }).map(function(m){
+                                            return m.reactionLikeEventId;
+                                            // return reaction_to_physicalEntity(m.reactionLikeEventId);
+                                        });
+                                        return o;
+                                     });
+var index = 0;
+HumanPathways_ReactionEventIDs.forEach(function(m){
+    // console.log(index++);
+    if(m.reactionEventIDs.length !== 0){
+       m.reactionEventIDs = _.uniq(m.reactionEventIDs);
+       m.physicalEntities = m.reactionEventIDs.map(function(id){
+        //    console.log(id);
+        return reaction_to_physicalEntity(id);
+        });
+    }
+});
