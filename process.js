@@ -9,15 +9,7 @@ var Pathway_To_ReactionLikeEvent = require("./data/Pathway_To_ReactionLikeEvent.
 var Pathways = require("./data/Pathway.json");
 var PathwayHierarchy = require("./data/PathwayHierarchy.json");
 var ReactionLikeEvent = require("./data/ReactionLikeEvent");
-// var data = {
-//     "PhysicalEntity": PhysicalEntity,
-//     "PhysicalEntityHierarchy": PhysicalEntityHierarchy,
-//     "ReactionLikeEvent_To_PhysicalEntity": ReactionLikeEvent_To_PhysicalEntity,
-//     "Pathway_To_ReactionLikeEvent": Pathway_To_ReactionLikeEvent,
-//     "Pathways": Pathways,
-//     "PathwayHierarchy": PathwayHierarchy,
-//     "ReactionLikeEvent": ReactionLikeEvent,
-// };
+var HumanPathways_ReactionEventIDs = require("./HumanPathways_ReactionEventIDs.json");
 
 const asyncLoop = require('node-async-loop');
 const mongoose = require('mongoose');
@@ -220,17 +212,35 @@ var HumanPathways_ReactionEventIDs = HumanPathways.map(function(pathway){
                                         });
                                         return o;
                                      });
-var index = 0;
-HumanPathways_ReactionEventIDs.forEach(function(m){
-    if(m.reactionEventIDs.length !== 0){
-       m.reactionEventIDs = _.uniq(m.reactionEventIDs);
-       m.physicalEntities = m.reactionEventIDs.map(function(id){
-                                return reaction_to_physicalEntity(id);
-                            });
-    }
-    if (index === HumanPathways_ReactionEventIDs.length-1){
-        jsonfile.writeFile("HumanPathways_ReactionEventIDs.json", HumanPathways_ReactionEventIDs, {spaces: 2}, function(err){ console.error(err);});  
-    }
-    console.log(index++);
-});
+
+/* How to link pathway to physical entities 
+    var index = 0;
+    HumanPathways_ReactionEventIDs.forEach(function(m){
+        if(m.reactionEventIDs.length !== 0){
+        m.reactionEventIDs = _.uniq(m.reactionEventIDs);
+        m.physicalEntities = m.reactionEventIDs.map(function(id){
+                                    return reaction_to_physicalEntity(id);
+                                });
+        }
+        if (index === HumanPathways_ReactionEventIDs.length-1){
+            jsonfile.writeFile("HumanPathways_ReactionEventIDs.json", HumanPathways_ReactionEventIDs, {spaces: 2}, function(err){ console.error(err);});  
+        }
+        console.log(index++);
+    });
+*/
+
+
+/* explore more about physicalEntity table */
+ var EGFR_related = PhysicalEntity.filter(function(m){return m.species === 'Homo sapiens' && m.displayName.indexOf('EGFR') > -1;});
+ _.uniq(EGFR_related.map(function(m){return m.class;}));
+[ 'Complex',
+  'EntityWithAccessionedSequence',
+  'DefinedSet',
+  'CandidateSet' ]
+// Complex 165
+// EntityWithAccessionedSequence 63
+// DefinedSet 13
+// CandidateSet 7
+EGFR_related.filter(function(m){return m.class==='Complex';}).map(function(m){return m.displayName;}).sort()
+
 
