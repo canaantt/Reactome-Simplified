@@ -9,19 +9,19 @@ var Pathway_To_ReactionLikeEvent = require("./data/Pathway_To_ReactionLikeEvent.
 var Pathways = require("./data/Pathway.json");
 var PathwayHierarchy = require("./data/PathwayHierarchy.json");
 var ReactionLikeEvent = require("./data/ReactionLikeEvent");
-var data = {
-    "PhysicalEntity": PhysicalEntity,
-    "PhysicalEntityHierarchy": PhysicalEntityHierarchy,
-    "ReactionLikeEvent_To_PhysicalEntity": ReactionLikeEvent_To_PhysicalEntity,
-    "Pathway_To_ReactionLikeEvent": Pathway_To_ReactionLikeEvent,
-    "Pathways": Pathways,
-    "PathwayHierarchy": PathwayHierarchy,
-    "ReactionLikeEvent": ReactionLikeEvent,
-};
+// var data = {
+//     "PhysicalEntity": PhysicalEntity,
+//     "PhysicalEntityHierarchy": PhysicalEntityHierarchy,
+//     "ReactionLikeEvent_To_PhysicalEntity": ReactionLikeEvent_To_PhysicalEntity,
+//     "Pathway_To_ReactionLikeEvent": Pathway_To_ReactionLikeEvent,
+//     "Pathways": Pathways,
+//     "PathwayHierarchy": PathwayHierarchy,
+//     "ReactionLikeEvent": ReactionLikeEvent,
+// };
 
 const asyncLoop = require('node-async-loop');
 const mongoose = require('mongoose');
-
+const jsonfile = require("jsonfile");
 // mongoose.connect("mongodb://localhost:27017/reactome-simple");
 // var db = mongoose.connection;
 // db.once("open", function(callback){
@@ -222,12 +222,15 @@ var HumanPathways_ReactionEventIDs = HumanPathways.map(function(pathway){
                                      });
 var index = 0;
 HumanPathways_ReactionEventIDs.forEach(function(m){
-    // console.log(index++);
     if(m.reactionEventIDs.length !== 0){
        m.reactionEventIDs = _.uniq(m.reactionEventIDs);
        m.physicalEntities = m.reactionEventIDs.map(function(id){
-        //    console.log(id);
-        return reaction_to_physicalEntity(id);
-        });
+                                return reaction_to_physicalEntity(id);
+                            });
     }
+    if (index === HumanPathways_ReactionEventIDs.length-1){
+        jsonfile.writeFile("HumanPathways_ReactionEventIDs.json", HumanPathways_ReactionEventIDs, {spaces: 2}, function(err){ console.error(err);});  
+    }
+    console.log(index++);
 });
+
