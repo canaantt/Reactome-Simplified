@@ -10,30 +10,36 @@ var Pathways = require("./data/Pathway.json");
 var PathwayHierarchy = require("./data/PathwayHierarchy.json");
 var ReactionLikeEvent = require("./data/ReactionLikeEvent");
 var HumanPathways_ReactionEventIDs = require("./HumanPathways_ReactionEventIDs.json");
-
+var ReactionCoordinates = require("./data/ReactionCoordinates.json");
+var Vertex = require("./data/Vertex.json");
 const asyncLoop = require('node-async-loop');
 const mongoose = require('mongoose');
 const jsonfile = require("jsonfile");
-// mongoose.connect("mongodb://localhost:27017/reactome-simple");
-// var db = mongoose.connection;
-// db.once("open", function(callback){
-//     console.log("Connection succeeded.");
-//     asyncLoop(Object.keys(data), function(c, next){
-//         console.log('Current Collection: ' + c);
-//         db.collection(c).insertMany(data[c], function(err, result){
-//             if (err) console.log(err);
-//             next();
-//         })
-//     }, function(err){
-//         if (err){
-//             console.log('Error: ' + err.message);
-//             return;
-//         } else {
-//             console.log("Finished!");
-//             db.close();
-//         }
-//     });
-// });
+mongoose.connect("mongodb://localhost:27017/reactome-simple");
+var db = mongoose.connection;
+
+var data = {
+    "ReactionCoordinates": ReactionCoordinates,
+    "Vertex": Vertex
+}
+db.once("open", function(callback){
+    console.log("Connection succeeded.");
+    asyncLoop(Object.keys(data), function(c, next){
+        console.log('Current Collection: ' + c);
+        db.collection(c).insertMany(data[c], function(err, result){
+            if (err) console.log(err);
+            next();
+        })
+    }, function(err){
+        if (err){
+            console.log('Error: ' + err.message);
+            return;
+        } else {
+            console.log("Finished!");
+            db.close();
+        }
+    });
+});
 
 // Queries
 // EGFR
