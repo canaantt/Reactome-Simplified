@@ -243,4 +243,14 @@ var HumanPathways_ReactionEventIDs = HumanPathways.map(function(pathway){
 // CandidateSet 7
 EGFR_related.filter(function(m){return m.class==='Complex';}).map(function(m){return m.displayName;}).sort()
 
+HumanPathways_ReactionEventIDs.filter(function(m){return m.reactionEventIDs.length === 0;}).length
+// 396 pathways do not have reaction like evnets, thus, cannot be mapped to physical entities
+
+var HumanPathways_RE_PE = HumanPathways_ReactionEventIDs.filter(function(m){return m.reactionEventIDs.length !== 0;});
+
+// This function is better than gene_to_pathway, it captures physical entity even the gene name appears in the middle of the displayName
+
+var gene_to_pathways_2 = function(gene){
+    return HumanPathways_RE_PE.filter(function(m){return m.physicalEntities.filter(function(n){return n[0].indexOf(gene)>-1;}).length > 0;});
+};
 
