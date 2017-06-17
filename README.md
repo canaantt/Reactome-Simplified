@@ -17,3 +17,5 @@
 - create Collections: "PathwayHierarchy", "PhysicalEntity", "ReactionLikeEvent_To_PhysicalEntity", "Pathways","ReactionLikeEvent", "Pathway_To_ReactionLikeEvent", "Vertext", and "ReactionCoordinates".
 
 ![Reactome Simplified Database ER](ER.png)
+http://www.reactome.org/content/schema/TopLevelPathway
+
