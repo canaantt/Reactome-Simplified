@@ -14,6 +14,6 @@
 ### Step IV: mongoDB 
 
 - create database "reactome-simple"
-- create Collections: "PathwayHierarchy", "PhysicalEntity", "ReactionLikeEvent_To_PhysicalEntity", "Pathways","ReactionLikeEvent", "Pathway_To_ReactionLikeEvent"
+- create Collections: "PathwayHierarchy", "PhysicalEntity", "ReactionLikeEvent_To_PhysicalEntity", "Pathways","ReactionLikeEvent", "Pathway_To_ReactionLikeEvent", "Vertext", and "ReactionCoordinates".
 
 ![Reactome Simplified Database ER](ER.png)
